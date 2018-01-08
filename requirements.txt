@@ -1,0 +1,7 @@
+google-api-python-client==1.6.4
+google-auth==1.2.1
+google-auth-httplib2==0.0.3
+click==6.7
+tox==2.9.1
+pytest==3.3.2
+pytest-cov==2.5.1
