@@ -1,4 +1,6 @@
+# -*- coding: utf-8 -*-
 import click
+import export_kind
 from __version__ import __version__ as version
 
 
@@ -56,8 +58,7 @@ def migrate(from_project, from_namespace, to_project, to_namespace, skip_export,
         with click.progressbar(kinds_list, label='Exporting',
                                show_eta=False, item_show_func=show_progressbar_item) as bar:
             for kind in bar:
-                # TODO: Implement export feature.
-                pass
+                export_kind.run(from_project, from_namespace, to_project, to_namespace, export_data_dir, kind)
 
     if not skip_import:
         with click.progressbar(kinds_list, label='Importing',
