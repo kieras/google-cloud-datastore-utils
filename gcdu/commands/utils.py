@@ -1,8 +1,9 @@
 # -*- coding: utf-8 -*-
 """Utilities."""
 import io
-import os
 import json
+import os
+
 import googleapiclient.discovery
 
 
@@ -20,7 +21,8 @@ def show_progressbar_item(item):
     return "Kind: {}".format(item)
 
 
-def partition_replace(entities_json, from_project, to_project, from_namespace, to_namespace):
+def partition_replace(entities_json, from_project, to_project, from_namespace,
+                      to_namespace):
     result = entities_json.replace('"projectId": "{}"'.format(from_project),
                                    '"projectId": "{}"'.format(to_project))
     result = result.replace('"namespaceId": "{}"'.format(from_namespace),
@@ -32,12 +34,15 @@ def save(entities, kind, data_dir):
     if not os.path.exists(data_dir):
         os.makedirs(data_dir)
 
-    with io.open('{}/{}.json'.format(data_dir, kind), 'w', encoding='utf-8') as export_file:
+    with io.open('{}/{}.json'.format(data_dir, kind), 'w',
+                 encoding='utf-8') as export_file:
         export_file.write(
-            json.dumps(entities, ensure_ascii=False, sort_keys=True, indent=2, separators=(',', ': ')))
+            json.dumps(entities, ensure_ascii=False, sort_keys=True, indent=2,
+                       separators=(',', ': ')))
 
 
 def load(kind, data_dir):
-    with io.open('{}/{}.json'.format(data_dir, kind), 'r', encoding='utf-8') as export_file:
+    with io.open('{}/{}.json'.format(data_dir, kind), 'r',
+                 encoding='utf-8') as export_file:
         entities = json.load(export_file)
     return entities
