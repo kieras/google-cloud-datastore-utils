@@ -4,6 +4,7 @@ import io
 import json
 import os
 
+import click
 import googleapiclient.discovery
 
 
@@ -31,6 +32,9 @@ def partition_replace(entities_json, from_project, to_project, from_namespace,
 
 
 def save(entities, kind, data_dir):
+    if not entities:
+        click.echo('No entities found for kind {}'.format(kind))
+        return
     if not os.path.exists(data_dir):
         os.makedirs(data_dir)
 
@@ -38,7 +42,7 @@ def save(entities, kind, data_dir):
                  encoding='utf-8') as export_file:
         export_file.write(
             json.dumps(entities, ensure_ascii=False, sort_keys=True, indent=2,
-                       separators=(',', ': ')))
+                       separators=(u',', u': ')))
 
 
 def load(kind, data_dir):

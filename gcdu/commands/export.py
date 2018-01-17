@@ -1,11 +1,12 @@
 # -*- coding: utf-8 -*-
 """The export command."""
+import copy
 import json
+import threading
 
 import click
 
-from .utils import (get_datastore_api, get_kinds_list, show_progressbar_item,
-                    partition_replace, save)
+from .utils import (get_datastore_api, get_kinds_list, partition_replace, save)
 
 
 @click.command()
@@ -44,11 +45,28 @@ def export(project, namespace, data_dir, project_placeholder,
             project,
             namespace,
             kinds_list))
-    with click.progressbar(kinds_list, label='Exporting', show_eta=True,
-                           item_show_func=show_progressbar_item) as bar:
-        for kind in bar:
-            execute_export(project, namespace, data_dir, project_placeholder,
-                           namespace_placeholder, kind)
+    tasks = {}
+    for kind in kinds_list:
+        tasks[kind] = threading.Thread(
+            target=execute_export,
+            name=kind,
+            args=(
+                project, namespace, data_dir,
+                project_placeholder,
+                namespace_placeholder, kind
+            )
+        )
+
+    kinds_list_progress = copy.deepcopy(kinds_list)
+
+    click.echo('Starting tasks...\n')
+    for task in tasks:
+        tasks[task].start()
+    while kinds_list_progress:
+        for idx, kind in enumerate(kinds_list_progress):
+            if not tasks.get(kind).is_alive():
+                click.echo('Task finished. Kind: {}'.format(kind))
+                kinds_list_progress.pop(idx)
 
 
 def execute_export(project, namespace, data_dir, project_placeholder,
