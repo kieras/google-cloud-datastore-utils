@@ -4,7 +4,7 @@ import json
 
 import click
 
-from .utils import (get_datastore_api, partition_replace, save, execute)
+from .utils import (get_datastore_api, partition_replace, save, execute_tasks)
 
 
 @click.command()
@@ -37,7 +37,7 @@ from .utils import (get_datastore_api, partition_replace, save, execute)
 def export(project, namespace, data_dir, project_placeholder,
            namespace_placeholder, kinds):
     """Export data from database."""
-    execute({
+    execute_tasks({
         'type_task': 'export',
         'project': project,
         'namespace': namespace,

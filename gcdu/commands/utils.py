@@ -5,6 +5,7 @@ import io
 import json
 import os
 import threading
+import time
 from collections import namedtuple
 
 import click
@@ -69,7 +70,7 @@ def load(kind, data_dir):
     return entities
 
 
-def execute(kargs):
+def execute_tasks(kargs):
     data = cls_task(**kargs)
     kinds_list = get_kinds_list(data.kinds)
     click.echo(
@@ -93,11 +94,17 @@ def execute(kargs):
 
     kinds_list_progress = copy.deepcopy(kinds_list)
 
-    click.echo('Starting tasks...\n')
+    click.echo('Starting tasks...')
     for task in tasks:
         tasks[task].start()
+
+    click.echo('Done. {} tasks started.'.format(len(tasks)))
+    click.echo('Executing...')
+
     while kinds_list_progress:
         for idx, kind in enumerate(kinds_list_progress):
             if not tasks.get(kind).is_alive():
-                click.echo('Task finished. Kind: {}'.format(kind))
+                click.echo('Done. Kind={}'.format(kind))
                 kinds_list_progress.pop(idx)
+
+    click.echo('Finished!')

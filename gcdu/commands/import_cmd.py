@@ -4,7 +4,7 @@ import json
 
 import click
 
-from .utils import (get_datastore_api, partition_replace, load, execute)
+from .utils import (get_datastore_api, partition_replace, load, execute_tasks)
 
 
 @click.command('import')
@@ -37,7 +37,7 @@ from .utils import (get_datastore_api, partition_replace, load, execute)
 def import_cmd(project, namespace, data_dir, project_placeholder,
                namespace_placeholder, kinds):
     """Import data to database using previously exported data as input."""
-    execute({
+    execute_tasks({
         'type_task': 'import',
         'project': project,
         'namespace': namespace,
