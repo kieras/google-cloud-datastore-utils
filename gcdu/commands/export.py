@@ -1,12 +1,10 @@
 # -*- coding: utf-8 -*-
 """The export command."""
-import copy
 import json
-import threading
 
 import click
 
-from .utils import (get_datastore_api, get_kinds_list, partition_replace, save)
+from .utils import (get_datastore_api, partition_replace, save, execute)
 
 
 @click.command()
@@ -39,34 +37,16 @@ from .utils import (get_datastore_api, get_kinds_list, partition_replace, save)
 def export(project, namespace, data_dir, project_placeholder,
            namespace_placeholder, kinds):
     """Export data from database."""
-    kinds_list = get_kinds_list(kinds)
-    click.echo(
-        "Executing export. Project={}, Namespace={}, Kinds={}.".format(
-            project,
-            namespace,
-            kinds_list))
-    tasks = {}
-    for kind in kinds_list:
-        tasks[kind] = threading.Thread(
-            target=execute_export,
-            name=kind,
-            args=(
-                project, namespace, data_dir,
-                project_placeholder,
-                namespace_placeholder, kind
-            )
-        )
-
-    kinds_list_progress = copy.deepcopy(kinds_list)
-
-    click.echo('Starting tasks...\n')
-    for task in tasks:
-        tasks[task].start()
-    while kinds_list_progress:
-        for idx, kind in enumerate(kinds_list_progress):
-            if not tasks.get(kind).is_alive():
-                click.echo('Task finished. Kind: {}'.format(kind))
-                kinds_list_progress.pop(idx)
+    execute({
+        'type_task': 'export',
+        'project': project,
+        'namespace': namespace,
+        'data_dir': data_dir,
+        'project_placeholder': project_placeholder,
+        'namespace_placeholder': namespace_placeholder,
+        'kinds': kinds,
+        'target': execute_export
+    })
 
 
 def execute_export(project, namespace, data_dir, project_placeholder,

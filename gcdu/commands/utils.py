@@ -1,11 +1,28 @@
 # -*- coding: utf-8 -*-
 """Utilities."""
+import copy
 import io
 import json
 import os
+import threading
+from collections import namedtuple
 
 import click
 import googleapiclient.discovery
+
+cls_task = namedtuple(
+    'Task',
+    [
+        'type_task',
+        'project',
+        'namespace',
+        'target',
+        'data_dir',
+        'project_placeholder',
+        'namespace_placeholder',
+        'kinds'
+    ]
+)
 
 
 def get_datastore_api():
@@ -50,3 +67,37 @@ def load(kind, data_dir):
                  encoding='utf-8') as export_file:
         entities = json.load(export_file)
     return entities
+
+
+def execute(kargs):
+    data = cls_task(**kargs)
+    kinds_list = get_kinds_list(data.kinds)
+    click.echo(
+        "Executing {}. Project={}, Namespace={}, Kinds={}.".format(
+            data.type_task,
+            data.project,
+            data.namespace,
+            kinds_list))
+
+    tasks = {}
+    for kind in kinds_list:
+        tasks[kind] = threading.Thread(
+            target=data.target,
+            name=kind,
+            args=(
+                data.project, data.namespace, data.data_dir,
+                data.project_placeholder,
+                data.namespace_placeholder, kind
+            )
+        )
+
+    kinds_list_progress = copy.deepcopy(kinds_list)
+
+    click.echo('Starting tasks...\n')
+    for task in tasks:
+        tasks[task].start()
+    while kinds_list_progress:
+        for idx, kind in enumerate(kinds_list_progress):
+            if not tasks.get(kind).is_alive():
+                click.echo('Task finished. Kind: {}'.format(kind))
+                kinds_list_progress.pop(idx)
