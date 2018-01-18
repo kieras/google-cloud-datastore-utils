@@ -4,8 +4,7 @@ import json
 
 import click
 
-from .utils import (get_datastore_api, get_kinds_list, show_progressbar_item,
-                    partition_replace, load)
+from .utils import (get_datastore_api, partition_replace, load, execute_tasks)
 
 
 @click.command('import')
@@ -38,17 +37,16 @@ from .utils import (get_datastore_api, get_kinds_list, show_progressbar_item,
 def import_cmd(project, namespace, data_dir, project_placeholder,
                namespace_placeholder, kinds):
     """Import data to database using previously exported data as input."""
-    kinds_list = get_kinds_list(kinds)
-    click.echo(
-        "Executing import. Project={}, Namespace={}, Kinds={}.".format(
-            project,
-            namespace,
-            kinds_list))
-    with click.progressbar(kinds_list, label='Importing', show_eta=True,
-                           item_show_func=show_progressbar_item) as bar:
-        for kind in bar:
-            execute_import(project, namespace, data_dir, project_placeholder,
-                           namespace_placeholder, kind)
+    execute_tasks({
+        'type_task': 'import',
+        'project': project,
+        'namespace': namespace,
+        'data_dir': data_dir,
+        'project_placeholder': project_placeholder,
+        'namespace_placeholder': namespace_placeholder,
+        'kinds': kinds,
+        'target': execute_import
+    })
 
 
 def execute_import(project, namespace, data_dir, project_placeholder,
@@ -59,7 +57,8 @@ def execute_import(project, namespace, data_dir, project_placeholder,
     entities_json = json.dumps(entities)
     entities_replaced_json = partition_replace(entities_json,
                                                project_placeholder, project,
-                                               namespace_placeholder, namespace)
+                                               namespace_placeholder,
+                                               namespace)
     entities_replaced = json.loads(entities_replaced_json)
 
     inserts = [

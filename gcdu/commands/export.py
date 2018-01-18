@@ -4,8 +4,7 @@ import json
 
 import click
 
-from .utils import (get_datastore_api, get_kinds_list, show_progressbar_item,
-                    partition_replace, save)
+from .utils import (get_datastore_api, partition_replace, save, execute_tasks)
 
 
 @click.command()
@@ -38,17 +37,16 @@ from .utils import (get_datastore_api, get_kinds_list, show_progressbar_item,
 def export(project, namespace, data_dir, project_placeholder,
            namespace_placeholder, kinds):
     """Export data from database."""
-    kinds_list = get_kinds_list(kinds)
-    click.echo(
-        "Executing export. Project={}, Namespace={}, Kinds={}.".format(
-            project,
-            namespace,
-            kinds_list))
-    with click.progressbar(kinds_list, label='Exporting', show_eta=True,
-                           item_show_func=show_progressbar_item) as bar:
-        for kind in bar:
-            execute_export(project, namespace, data_dir, project_placeholder,
-                           namespace_placeholder, kind)
+    execute_tasks({
+        'type_task': 'export',
+        'project': project,
+        'namespace': namespace,
+        'data_dir': data_dir,
+        'project_placeholder': project_placeholder,
+        'namespace_placeholder': namespace_placeholder,
+        'kinds': kinds,
+        'target': execute_export
+    })
 
 
 def execute_export(project, namespace, data_dir, project_placeholder,
