@@ -5,7 +5,6 @@ import io
 import json
 import os
 import threading
-import time
 from collections import namedtuple
 
 import click
