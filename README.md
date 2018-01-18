@@ -11,7 +11,7 @@ Simply run:
 
 You need to authenticate in the project using gcloud sdk:
 
-    $ cloud auth login
+    $ gcloud auth login
     $ gcloud config set project PROJECT_ID
 
 Or exporting the environment variable:
@@ -28,11 +28,11 @@ To use it:
 
     $ gcdu --help
 
-Export Command:
+Export command:
 
-    $ gcdu export -p [project] -n [namespace] -k [kinds with Comma separated]
+    $ gcdu export -p [project] -n [namespace] -k [comma separated list of datastore kinds]
 
-Import Command:
+Import command:
 
-    $ gcdu import -p [project] -n [namespace] -k [kinds with Comma separated]
+    $ gcdu import -p [project] -n [namespace] -k [comma separated list of datastore kinds]
 
