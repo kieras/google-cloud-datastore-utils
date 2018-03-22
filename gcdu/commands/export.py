@@ -67,16 +67,27 @@ def execute_export(project, namespace, data_dir, project_placeholder,
         }
     }
 
-    response = datastore.projects() \
-        .runQuery(projectId=project, body=request_body) \
-        .execute()
+    entities_replaced = []
+    more = True
+    
+    while more:
+        response = datastore.projects() \
+            .runQuery(projectId=project, body=request_body) \
+            .execute()
 
-    entities = extract_entities(response)
-    entities_json = json.dumps(entities)
-    entities_replaced_json = partition_replace(entities_json, project,
-                                               project_placeholder, namespace,
-                                               namespace_placeholder)
-    entities_replaced = json.loads(entities_replaced_json)
+        more = not (response['batch']['moreResults'] in ['NO_MORE_RESULTS'])
+        cursor = response['batch']['endCursor']
+
+        if more and cursor:
+            request_body['query']['startCursor'] = cursor
+
+        entities = extract_entities(response)
+        entities_json = json.dumps(entities)
+        entities_replaced_json = partition_replace(entities_json, project,
+                                                project_placeholder, namespace,
+                                                namespace_placeholder)
+    
+        entities_replaced.extend(json.loads(entities_replaced_json))
 
     save(entities_replaced, kind, data_dir)
 
