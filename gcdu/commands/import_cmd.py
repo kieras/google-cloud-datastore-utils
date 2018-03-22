@@ -4,7 +4,7 @@ import json
 
 import click
 
-from .utils import (get_datastore_api, partition_replace, load, execute_tasks)
+from .utils import (get_datastore_api, partition_replace, load, execute_tasks, chunk)
 
 
 @click.command('import')
@@ -61,15 +61,19 @@ def execute_import(project, namespace, data_dir, project_placeholder,
                                                namespace)
     entities_replaced = json.loads(entities_replaced_json)
 
-    inserts = [
-        {'insert': entity} for entity in entities_replaced
-    ]
+    
+    _iter = chunk(entities_replaced, 500)
+    
+    for _next in _iter:
+        inserts = [
+            {'insert': entity} for entity in _next
+        ]
 
-    request_body = {
-        "mutations": inserts,
-        "mode": "NON_TRANSACTIONAL"
-    }
+        request_body = {
+            "mutations": inserts,
+            "mode": "NON_TRANSACTIONAL"
+        }
 
-    datastore.projects() \
-        .commit(projectId=project, body=request_body) \
-        .execute()
+        datastore.projects() \
+            .commit(projectId=project, body=request_body) \
+            .execute()
