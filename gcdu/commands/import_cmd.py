@@ -4,7 +4,7 @@ import json
 
 import click
 
-from .utils import (get_datastore_api, partition_replace, load, execute_tasks, chunk)
+from .utils import (get_datastore_api, partition_replace, load, execute_tasks, split_lists)
 
 
 @click.command('import')
@@ -34,8 +34,12 @@ from .utils import (get_datastore_api, partition_replace, load, execute_tasks, c
 @click.option('--kinds', '-k',
               help='Comma separated list of Datastore Kinds to import.',
               required=True)
+@click.option('--chunk', '-c',
+              help='A valid int number',
+              default=500,
+              required=False)
 def import_cmd(project, namespace, data_dir, project_placeholder,
-               namespace_placeholder, kinds):
+               namespace_placeholder, kinds, chunk):
     """Import data to database using previously exported data as input."""
     execute_tasks({
         'type_task': 'import',
@@ -45,12 +49,13 @@ def import_cmd(project, namespace, data_dir, project_placeholder,
         'project_placeholder': project_placeholder,
         'namespace_placeholder': namespace_placeholder,
         'kinds': kinds,
-        'target': execute_import
+        'chunk': chunk,
+        'target': execute_import,
     })
 
 
 def execute_import(project, namespace, data_dir, project_placeholder,
-                   namespace_placeholder, kind):
+                   namespace_placeholder, kind, chunk):
     datastore = get_datastore_api()
 
     entities = load(kind, data_dir)
@@ -62,7 +67,7 @@ def execute_import(project, namespace, data_dir, project_placeholder,
     entities_replaced = json.loads(entities_replaced_json)
 
     
-    _iter = chunk(entities_replaced, 500)
+    _iter = split_lists(entities_replaced, chunk)
     
     for _next in _iter:
         inserts = [
