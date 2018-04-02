@@ -34,12 +34,8 @@ from .utils import (get_datastore_api, partition_replace, save, execute_tasks)
 @click.option('--kinds', '-k',
               help='Comma separated list of Datastore Kinds to export.',
               required=True)
-@click.option('--chunk', '-c',
-              help='A valid int number',
-              default='500',
-              required=False)              
 def export(project, namespace, data_dir, project_placeholder,
-           namespace_placeholder, kinds, chunk):
+           namespace_placeholder, kinds):
     """Export data from database."""
     execute_tasks({
         'type_task': 'export',
@@ -49,7 +45,7 @@ def export(project, namespace, data_dir, project_placeholder,
         'project_placeholder': project_placeholder,
         'namespace_placeholder': namespace_placeholder,
         'kinds': kinds,
-        'chunk': chunk,
+        'chunk': None,
         'target': execute_export
     })
 
