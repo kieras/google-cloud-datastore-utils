@@ -398,3 +398,4 @@ $RECYCLE.BIN/
 *.lnk
 
 # End of https://www.gitignore.io/api/node,java,linux,macos,maven,python,eclipse,windows,virtualenv,intellij+all
+.vscode/

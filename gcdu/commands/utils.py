@@ -20,7 +20,8 @@ cls_task = namedtuple(
         'data_dir',
         'project_placeholder',
         'namespace_placeholder',
-        'kinds'
+        'kinds',
+        'chunk'
     ]
 )
 
@@ -87,7 +88,7 @@ def execute_tasks(kargs):
             args=(
                 data.project, data.namespace, data.data_dir,
                 data.project_placeholder,
-                data.namespace_placeholder, kind
+                data.namespace_placeholder, kind, data.chunk
             )
         )
 
@@ -107,3 +108,18 @@ def execute_tasks(kargs):
                 kinds_list_progress.pop(idx)
 
     click.echo('Finished!')
+
+    
+def split_lists(iterable, chunk_size):
+    """Generate sequences of `chunk_size` elements from `iterable`."""
+    iterable = iter(iterable)
+    while True:
+        chunk = []
+        try:
+            for _ in range(chunk_size):
+                chunk.append(iterable.next())
+            yield chunk
+        except StopIteration:
+            if chunk:
+                yield chunk
+            break
