@@ -11,7 +11,7 @@ Simply run:
 
 You need to authenticate in the project using gcloud sdk:
 
-    $ gcloud auth login
+    $ gcloud auth application-default login
     $ gcloud config set project PROJECT_ID
 
 Or exporting the environment variable:
