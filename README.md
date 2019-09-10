@@ -56,6 +56,11 @@ export GOOGLE_APPLICATION_CREDENTIALS='service-account-key.json'
 
 ```bash
 gcdu import --project my-project-stage --namespace e2e-20190313-192340 --data-dir=resources/database --kinds=AuditLog,Budget,BudgetBigqueryIntegration,BudgetChannel,BudgetCostCenter,BudgetEntity,BudgetGLCode,BudgetLocation,BudgetProduct,CurrencyCode,CurrencyEntity,Entry,FeatureToggle,LoadVersionControl,Settings,Submission,SubmissionForEmailCron,SubmissionLinePreview,SubmissionSequence,Team,Template,Transaction,User,Checkpoint,CostCenter,Header,OptionEntry,Question,QuestionAlias,BudgetQuarterSnapshot
+```
+
+Command output:
+
+```bash
 Executing import. Project=my-project-stage, Namespace=e2e-20190313-192340, Kinds=[u'AuditLog', u'Budget', u'BudgetBigqueryIntegration', u'BudgetChannel', u'BudgetCostCenter', u'BudgetEntity', u'BudgetGLCode', u'BudgetLocation', u'BudgetProduct', u'CurrencyCode', u'CurrencyEntity', u'Entry', u'FeatureToggle', u'LoadVersionControl', u'Settings', u'Submission', u'SubmissionForEmailCron', u'SubmissionLinePreview', u'SubmissionSequence', u'Team', u'Template', u'Transaction', u'User', u'Checkpoint', u'CostCenter', u'Header', u'OptionEntry', u'Question', u'QuestionAlias', u'BudgetQuarterSnapshot'].
 Starting tasks...
 Done. 30 tasks started.
